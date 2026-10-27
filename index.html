@@ -886,23 +886,21 @@ function drawQuiz(box) {
 
 /* formula sheet */
 const SHEET = [
-  { code: '2.2', name: 'Derivatives', rows: [
-    ['Definition', R`\(f'(a)=\displaystyle\lim_{h\to 0}\dfrac{f(a+h)-f(a)}{h}\)`],
-    ['Basic', R`\((x^n)'=n\,x^{n-1}\qquad (e^x)'=e^x\qquad (\ln x)'=\dfrac{1}{x}\)`],
-    ['Product', R`\((f\cdot g)'=f'g+fg'\)`],
-    ['Quotient', R`\(\left(\dfrac{f}{g}\right)'=\dfrac{f'g-fg'}{g^2}\)`],
-    ['Chain', R`\(\big(f(g(x))\big)'=f'\big(g(x)\big)\cdot g'(x)\)`],
-    ['Tangent line', R`\(L(x)=f(a)+f'(a)\,(x-a)\)`]
+  { code: '2.2', name: 'Derivatives of basic functions', rows: [
+    ['Basic', R`\((x^n)'=n\,x^{n-1}\ \ \forall n\in\mathbb{R}\qquad (e^x)'=e^x\qquad (\ln|x|)'=\dfrac{1}{x}\)`]
   ]},
-  { code: '2.4', name: 'Taylor', rows: [
-    ['Taylor polynomial', R`\(P_n(x)=\displaystyle\sum_{k=0}^{n}\dfrac{f^{(k)}(a)}{k!}(x-a)^k=f(a)+f'(a)(x-a)+\dfrac{f''(a)}{2!}(x-a)^2+\cdots\)`]
+  { code: '2.2', name: 'Basic properties of differentiation', rows: [
+    ['Linearity', R`\(\big(af(x)+bg(x)\big)'=af'(x)+bg'(x)\)`],
+    ['Product', R`\(\big(f(x)\cdot g(x)\big)'=f'(x)\cdot g(x)+f(x)\cdot g'(x)\)`],
+    ['Quotient', R`\(\left(\dfrac{f(x)}{g(x)}\right)'=\dfrac{f'(x)\cdot g(x)-f(x)\cdot g'(x)}{\big(g(x)\big)^2}\)`],
+    ['Chain', R`\(\big(f(g(x))\big)'=f'\big(g(x)\big)\cdot g'(x)\)`]
   ]},
-  { code: '2.5', name: 'Integrals', rows: [
-    ['Power', R`\(\displaystyle\int x^n\,dx=\dfrac{x^{n+1}}{n+1}+C\quad(n\neq-1)\)`],
-    ['1/x and e', R`\(\displaystyle\int\dfrac{1}{x}\,dx=\ln|x|+C\qquad \int e^{kx}\,dx=\dfrac{e^{kx}}{k}+C\)`],
-    ['Barrow', R`\(\displaystyle\int_a^b f(x)\,dx=F(b)-F(a)\)`],
-    ['Properties', R`\(\displaystyle\int_a^b f=\int_a^c f+\int_c^b f\qquad \int_b^a f=-\int_a^b f\)`],
-    ['Average value', R`\(f_{\text{avg}}=\dfrac{1}{b-a}\displaystyle\int_a^b f(x)\,dx\)`]
+  { code: '2.4', name: 'Taylor polynomial of order n', rows: [
+    ['Formula', R`\(P_n(x)=f(a)+f'(a)(x-a)+\dfrac{1}{2!}f''(a)(x-a)^2+\cdots+\dfrac{1}{n!}f^{(n)}(a)(x-a)^n\)`]
+  ]},
+  { code: '2.5', name: 'Indefinite integrals of basic functions', rows: [
+    ['Power', R`\(\displaystyle\int(a+bx)^n\,dx=\begin{cases}\dfrac{(a+bx)^{n+1}}{b(n+1)}+C & n\neq-1\\[6pt] \dfrac{\ln|a+bx|}{b}+C & n=-1\end{cases}\)`],
+    ['Exponential', R`\(\displaystyle\int e^{ax}\,dx=\dfrac{1}{a}e^{ax}+C\)`]
   ]}
 ];
 const HEAD = [
@@ -918,10 +916,13 @@ const HEAD = [
     ['Brackets', R`\(|x|\): drop the minus\(\qquad\lfloor x\rfloor\): round <b>down</b> to a whole number`]
   ]},
   { code: '2.2', name: 'Derivatives', rows: [
+    ['Definition', R`\(f'(a)=\displaystyle\lim_{h\to 0}\dfrac{f(a+h)-f(a)}{h}\) (slope of the tangent)`],
+    ['Tangent line', R`\(L(x)=f(a)+f'(a)\,(x-a)\)`],
     ['Marginal', R`marginal \(=\) derivative: \(C'(q)\) marginal cost, \(I'(q)\) marginal income, \(\pi'(q)\) marginal profit`],
     ['Units', R`units of \(f\) divided by units of \(x\) (e.g. € per unit)`],
-    ['e-shortcuts', R`\((e^{kx})'=k\,e^{kx}\qquad (e^{u})'=e^{u}\cdot u'\qquad (\ln u)'=\dfrac{u'}{u}\)`],
-    ['Average rate', R`\(\dfrac{f(b)-f(a)}{b-a}\) (slope of the secant)`]
+    ['Chain shortcuts', R`\((e^{kx})'=k\,e^{kx}\qquad (e^{u})'=e^{u}\cdot u'\qquad (\ln u)'=\dfrac{u'}{u}\)`],
+    ['Average rate', R`\(\dfrac{f(b)-f(a)}{b-a}\) (slope of the secant)`],
+    ['Differentiable?', R`differentiable ⇒ continuous, not the other way round: \(|x|\) has a corner at 0`]
   ]},
   { code: '2.3', name: 'Analysis & optimization', rows: [
     ['Candidates', R`\(f'=0\), endpoints of the domain, kinks/joins`],
@@ -934,15 +935,18 @@ const HEAD = [
     ['Factorials', R`\(2!=2\quad 3!=6\quad 4!=24\quad 5!=120\)`],
     ['Coefficient', R`\(c_k=\dfrac{f^{(k)}(a)}{k!}\) (build: divide by \(k!\))`],
     ['Read back', R`\(f^{(k)}(a)=k!\cdot c_k\) (reverse: multiply by \(k!\)); missing power ⇒ derivative \(=0\)`],
-    ['Tangent', R`\(P_1(x)=f(a)+f'(a)(x-a)\)`],
     ['Shape near a', R`first term after the linear one, \(c\,(x-a)^m\):<br><b>m even:</b> \(c\gt 0\) above tangent, convex ∪; \(c\lt 0\) below, concave ∩<br><b>m odd:</b> crosses the tangent ⇒ inflection point`],
     ['e^x around 0', R`\(e^x\approx 1+x+\dfrac{x^2}{2}+\dfrac{x^3}{6}\)`]
   ]},
   { code: '2.5', name: 'Integration', rows: [
-    ['+C', R`indefinite integral: always \(+C\); definite: no \(+C\)`],
+    ['Antiderivative', R`\(F'=f\Rightarrow\displaystyle\int f(x)\,dx=F(x)+C\); indefinite: always \(+C\)`],
+    ['Using the sheet', R`plain powers: \(a=0,\ b=1\): \(\displaystyle\int x^n\,dx=\dfrac{x^{n+1}}{n+1}+C\qquad \int\dfrac{1}{x}\,dx=\ln|x|+C\qquad \int k\,dx=kx+C\)`],
     ['Rewrite first', R`\(\sqrt{x}=x^{1/2}\qquad \dfrac{1}{x^2}=x^{-2}\qquad \dfrac{3}{\sqrt{q}}=3q^{-1/2}\)`],
+    ['Barrow', R`\(\displaystyle\int_a^b f(x)\,dx=F(b)-F(a)\) (no \(+C\))`],
+    ['Properties', R`\(\displaystyle\int_a^b f=\int_a^c f+\int_c^b f\qquad \int_a^a f=0\qquad \int_b^a f=-\int_a^b f\)`],
     ['Signed area', R`area above the x-axis minus area below; step/line graphs: add rectangles and triangles`],
     ['Marginal → total', R`\(C(b)-C(a)=\displaystyle\int_a^b C'(x)\,dx\qquad C(x)=C(0)+\int_0^x C'(t)\,dt\) (\(C(0)\) = fixed cost)`],
+    ['Average value', R`\(f_{\text{avg}}=\dfrac{1}{b-a}\displaystyle\int_a^b f(x)\,dx\)`],
     ['Density', R`\(f(x)\ge 0\) and \(\displaystyle\int_{-\infty}^{+\infty}f(x)\,dx=1\)`]
   ]}
 ];
@@ -963,15 +967,15 @@ function sheetView() {
   <div class="block noprint">
     <span class="steplabel">Formula sheet</span>
     <h2>What you get, and what you must know</h2>
-    <p class="lede">Part A is my guess at the official sheet: only the core formulas. Part B is everything that usually isn't on it: meanings, rules of thumb and the traps from today. Cover each formula in Part B with your hand and say it out loud before you look.</p>
+    <p class="lede">Part A is the official Unit 2 formula sheet you get in the exam. Part B is everything that is <b>not</b> on it, so you must know it by heart: definitions, meanings, rules of thumb and the traps from today. Cover each formula in Part B with your hand and say it out loud before you look.</p>
     <div class="row"><button class="btn primary" type="button" onclick="window.print()">Print / save as PDF</button></div>
   </div>
   <div class="spart">
-    <div class="sbadge a">A · Probably on the exam sheet</div>
+    <div class="sbadge a">A · Official exam sheet (you get this)</div>
     ${sheetTable(SHEET)}
   </div>
   <div class="spart">
-    <div class="sbadge b">B · Learn by heart (probably not on the sheet)</div>
+    <div class="sbadge b">B · Learn by heart (not on the sheet)</div>
     ${sheetTable(HEAD)}
   </div>
   <div class="spart">
