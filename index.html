@@ -187,6 +187,30 @@ table.mini td, table.mini th { border-bottom: 1px solid var(--line); padding: 4p
 .lang { align-self: flex-start; font-family: var(--f-mono); font-size: 11px; text-transform: uppercase; letter-spacing: .06em; padding: 1px 7px; border-radius: 999px; margin-bottom: 4px; }
 .lang.de { background: #fff1d6; color: var(--warn); }
 .lang.en { background: var(--pen-soft); color: var(--pen); }
+/* formula sheet */
+.spart { display: flex; flex-direction: column; gap: 14px; }
+.sbadge { align-self: flex-start; font: 700 15px var(--f-display); padding: 6px 12px; border-radius: 8px; }
+.sbadge.a { background: var(--pen); color: #fff; }
+.sbadge.b { background: var(--mark); color: var(--mark-ink); }
+.sbadge.c { background: var(--bad-soft); color: var(--bad); }
+.sgroup { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; min-width: 0; }
+.sgroup h3 { font-size: 17px; margin-bottom: 6px; }
+.scode { font-family: var(--f-mono); font-size: 13px; color: var(--pen); margin-right: 4px; }
+.srows { display: grid; grid-template-columns: 150px 1fr; margin: 0; }
+.srows dt, .srows dd { margin: 0; padding: 8px 0; border-top: 1px solid var(--line); min-width: 0; }
+.srows dt { font-weight: 600; font-size: 14px; color: var(--ink-soft); padding-right: 10px; }
+.srows dd { overflow-x: auto; }
+@media (max-width: 560px) { .srows { grid-template-columns: 1fr; } .srows dt { padding-bottom: 0; } .srows dd { border-top: 0; padding-top: 2px; } }
+@media print {
+  header.top, nav.tabs, .noprint { display: none !important; }
+  body { background: #fff; font-size: 12px; }
+  main { padding: 0; }
+  .sgroup { break-inside: avoid; border-color: #ccc; padding: 6px 10px; }
+  .srows dt, .srows dd { padding: 4px 0; }
+  .spart { gap: 8px; }
+  .spart:nth-of-type(3) { break-before: page; }
+  .sbadge { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}
 mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
@@ -197,7 +221,7 @@ mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width:
   <div class="eyebrow">Applied Mathematics for Business · Unit 2 · One-variable calculus</div>
   <h1>Calculus Unit 2 <span class="hl">Trainer</span></h1>
   <div class="countdown" id="countdown"></div>
-  <div class="row" style="margin-top:12px"><button class="btn primary" type="button" onclick="go('videos')">▶ Videos in German &amp; English</button></div>
+  <div class="row" style="margin-top:12px"><button class="btn primary" type="button" onclick="go('sheet')">📄 Formula sheet</button><button class="btn" type="button" onclick="go('videos')">▶ Videos in German &amp; English</button></div>
 </div></header>
 
 <nav class="tabs" aria-label="Sections"><div class="wrap" id="tabs" role="tablist"></div></nav>
@@ -620,7 +644,7 @@ function topicPct(t) { const n = t.problems.length; const g = t.problems.filter(
 })();
 
 /* ---------------- VIEWS ---------------- */
-const VIEWS = [{ id: 'plan', label: 'How to study' }, { id: 'videos', label: '▶ Videos' }, ...TOPICS.map(t => ({ id: t.id, label: t.code, topic: t })), { id: 'quiz', label: 'Mixed quiz' }, { id: 'review', label: 'Review' }];
+const VIEWS = [{ id: 'plan', label: 'How to study' }, { id: 'sheet', label: '📄 Formula sheet' }, { id: 'videos', label: '▶ Videos' }, ...TOPICS.map(t => ({ id: t.id, label: t.code, topic: t })), { id: 'quiz', label: 'Mixed quiz' }, { id: 'review', label: 'Review' }];
 let current = 'plan';
 
 function renderTabs() {
@@ -644,6 +668,7 @@ function render() {
   else if (v.id === 'quiz') view = quizView();
   else if (v.id === 'review') view = reviewView();
   else if (v.id === 'videos') view = videosView();
+  else if (v.id === 'sheet') view = sheetView();
   else view = topicView(v.topic);
   main.appendChild(view);
   typeset(main);
@@ -857,6 +882,103 @@ function drawQuiz(box) {
   next.onclick = () => { quiz.i++; quiz.answered = false; drawQuiz(box); };
   box.append(ch, ex, next);
   typeset(box);
+}
+
+/* formula sheet */
+const SHEET = [
+  { code: '2.2', name: 'Derivatives', rows: [
+    ['Definition', R`\(f'(a)=\displaystyle\lim_{h\to 0}\dfrac{f(a+h)-f(a)}{h}\)`],
+    ['Basic', R`\((x^n)'=n\,x^{n-1}\qquad (e^x)'=e^x\qquad (\ln x)'=\dfrac{1}{x}\)`],
+    ['Product', R`\((f\cdot g)'=f'g+fg'\)`],
+    ['Quotient', R`\(\left(\dfrac{f}{g}\right)'=\dfrac{f'g-fg'}{g^2}\)`],
+    ['Chain', R`\(\big(f(g(x))\big)'=f'\big(g(x)\big)\cdot g'(x)\)`],
+    ['Tangent line', R`\(L(x)=f(a)+f'(a)\,(x-a)\)`]
+  ]},
+  { code: '2.4', name: 'Taylor', rows: [
+    ['Taylor polynomial', R`\(P_n(x)=\displaystyle\sum_{k=0}^{n}\dfrac{f^{(k)}(a)}{k!}(x-a)^k=f(a)+f'(a)(x-a)+\dfrac{f''(a)}{2!}(x-a)^2+\cdots\)`]
+  ]},
+  { code: '2.5', name: 'Integrals', rows: [
+    ['Power', R`\(\displaystyle\int x^n\,dx=\dfrac{x^{n+1}}{n+1}+C\quad(n\neq-1)\)`],
+    ['1/x and e', R`\(\displaystyle\int\dfrac{1}{x}\,dx=\ln|x|+C\qquad \int e^{kx}\,dx=\dfrac{e^{kx}}{k}+C\)`],
+    ['Barrow', R`\(\displaystyle\int_a^b f(x)\,dx=F(b)-F(a)\)`],
+    ['Properties', R`\(\displaystyle\int_a^b f=\int_a^c f+\int_c^b f\qquad \int_b^a f=-\int_a^b f\)`],
+    ['Average value', R`\(f_{\text{avg}}=\dfrac{1}{b-a}\displaystyle\int_a^b f(x)\,dx\)`]
+  ]}
+];
+const HEAD = [
+  { code: '2.1', name: 'Functions, limits & continuity', rows: [
+    ['Domain killers', R`\(\dfrac{1}{x}\): \(x\neq 0\)\(\qquad\sqrt{x}\): \(x\ge 0\)\(\qquad\ln x\): \(x\gt 0\)`],
+    ['Business', R`\(I(q)=q\cdot p(q)\qquad \pi(q)=I(q)-C(q)\qquad\) break-even: \(\pi(q)=0\)`],
+    ['Composition', R`\((f\circ g)(x)=f\big(g(x)\big)\): inner first, then outer`],
+    ['Limit exists', R`left limit \(=\) right limit`],
+    ['Limit rules', R`\(\dfrac{k}{\pm\infty}=0\qquad \dfrac{k}{0^{+}}=+\infty\qquad e^{-\infty}=0\qquad \ln(0^+)=-\infty\)`],
+    ['Continuous at a', R`\(f(a)\) exists, limit exists, limit \(=f(a)\)`],
+    ['Discontinuity', R`removable (limit \(\neq f(a)\)) · jump (left \(\neq\) right) · infinite (\(\pm\infty\))`],
+    ['ln and e', R`\(\ln(e^{a})=a\qquad e^{\ln a}=a\qquad \ln(ab)=\ln a+\ln b\qquad \ln(a^k)=k\ln a\qquad \ln 1=0\)`],
+    ['Brackets', R`\(|x|\): drop the minus\(\qquad\lfloor x\rfloor\): round <b>down</b> to a whole number`]
+  ]},
+  { code: '2.2', name: 'Derivatives', rows: [
+    ['Marginal', R`marginal \(=\) derivative: \(C'(q)\) marginal cost, \(I'(q)\) marginal income, \(\pi'(q)\) marginal profit`],
+    ['Units', R`units of \(f\) divided by units of \(x\) (e.g. € per unit)`],
+    ['e-shortcuts', R`\((e^{kx})'=k\,e^{kx}\qquad (e^{u})'=e^{u}\cdot u'\qquad (\ln u)'=\dfrac{u'}{u}\)`],
+    ['Average rate', R`\(\dfrac{f(b)-f(a)}{b-a}\) (slope of the secant)`]
+  ]},
+  { code: '2.3', name: 'Analysis & optimization', rows: [
+    ['Candidates', R`\(f'=0\), endpoints of the domain, kinks/joins`],
+    ['Monotonicity', R`\(f'\gt 0\) increasing, \(f'\lt 0\) decreasing; \(+\to-\) max, \(-\to+\) min`],
+    ['2nd derivative test', R`\(f''(x^*)\gt 0\) min (∪)\(\qquad f''(x^*)\lt 0\) max (∩)\(\qquad =0\) use sign table`],
+    ['Concavity', R`\(f''\gt 0\) convex ∪\(\qquad f''\lt 0\) concave ∩\(\qquad\) inflection: \(f''\) changes sign`],
+    ['Global max/min', R`evaluate \(f\) at <b>every</b> candidate and compare`]
+  ]},
+  { code: '2.4', name: 'Taylor', rows: [
+    ['Factorials', R`\(2!=2\quad 3!=6\quad 4!=24\quad 5!=120\)`],
+    ['Coefficient', R`\(c_k=\dfrac{f^{(k)}(a)}{k!}\) (build: divide by \(k!\))`],
+    ['Read back', R`\(f^{(k)}(a)=k!\cdot c_k\) (reverse: multiply by \(k!\)); missing power ⇒ derivative \(=0\)`],
+    ['Tangent', R`\(P_1(x)=f(a)+f'(a)(x-a)\)`],
+    ['Shape near a', R`first term after the linear one, \(c\,(x-a)^m\):<br><b>m even:</b> \(c\gt 0\) above tangent, convex ∪; \(c\lt 0\) below, concave ∩<br><b>m odd:</b> crosses the tangent ⇒ inflection point`],
+    ['e^x around 0', R`\(e^x\approx 1+x+\dfrac{x^2}{2}+\dfrac{x^3}{6}\)`]
+  ]},
+  { code: '2.5', name: 'Integration', rows: [
+    ['+C', R`indefinite integral: always \(+C\); definite: no \(+C\)`],
+    ['Rewrite first', R`\(\sqrt{x}=x^{1/2}\qquad \dfrac{1}{x^2}=x^{-2}\qquad \dfrac{3}{\sqrt{q}}=3q^{-1/2}\)`],
+    ['Signed area', R`area above the x-axis minus area below; step/line graphs: add rectangles and triangles`],
+    ['Marginal → total', R`\(C(b)-C(a)=\displaystyle\int_a^b C'(x)\,dx\qquad C(x)=C(0)+\int_0^x C'(t)\,dt\) (\(C(0)\) = fixed cost)`],
+    ['Density', R`\(f(x)\ge 0\) and \(\displaystyle\int_{-\infty}^{+\infty}f(x)\,dx=1\)`]
+  ]}
+];
+const SHEET_TRAPS = [
+  R`<b>Coefficient ≠ derivative.</b> \(\pi''(0)=-\tfrac34\), but the \(t^2\) coefficient is \(\dfrac{-3/4}{2}=-\tfrac38\). Same sign, so same concavity.`,
+  R`<b>Forgetting \(k!\)</b> when reading derivatives off \(P_n\): \(-(x-2)^4\Rightarrow f^{(4)}(2)=24\cdot(-1)=-24\), not \(-1\).`,
+  R`<b>Chain rule on \(e\):</b> \(\left(e^{t/2}\right)'=\tfrac12 e^{t/2}\), not \(e^{t/2}\).`,
+  R`<b>Binomial:</b> \((1+x)^2=1+2x+x^2\), not \(1+x^2\).`,
+  R`<b>\(\ln\) of a negative</b> is undefined: \(\ln(-e^4)\) doesn't exist, but \(-\ln(e^4)=-4\).`,
+  R`<b>Plug in a number</b> at the end to check any algebra (e.g. \(x=2\) on both sides).`
+];
+function sheetTable(groups) {
+  return groups.map(g => `<div class="sgroup"><h3><span class="scode">${g.code}</span> ${g.name}</h3><dl class="srows">${g.rows.map(([l, f]) => `<dt>${l}</dt><dd>${f}</dd>`).join('')}</dl></div>`).join('');
+}
+function sheetView() {
+  const s = h('section', { class: 'view sheet' });
+  s.innerHTML = `
+  <div class="block noprint">
+    <span class="steplabel">Formula sheet</span>
+    <h2>What you get, and what you must know</h2>
+    <p class="lede">Part A is my guess at the official sheet: only the core formulas. Part B is everything that usually isn't on it: meanings, rules of thumb and the traps from today. Cover each formula in Part B with your hand and say it out loud before you look.</p>
+    <div class="row"><button class="btn primary" type="button" onclick="window.print()">Print / save as PDF</button></div>
+  </div>
+  <div class="spart">
+    <div class="sbadge a">A · Probably on the exam sheet</div>
+    ${sheetTable(SHEET)}
+  </div>
+  <div class="spart">
+    <div class="sbadge b">B · Learn by heart (probably not on the sheet)</div>
+    ${sheetTable(HEAD)}
+  </div>
+  <div class="spart">
+    <div class="sbadge c">Traps from your practice</div>
+    <ul class="traps">${SHEET_TRAPS.map(t => `<li>${t}</li>`).join('')}</ul>
+  </div>`;
+  return s;
 }
 
 /* review */
